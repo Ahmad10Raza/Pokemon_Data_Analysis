@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Battle Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Pokémon Battle Predictor</h1>
+        
+        <form method="POST">
+            <div class="select-container">
+                <div class="pokemon-select">
+                    <label for="pokemon1">Pokémon 1:</label>
+                    <input list="pokemon-list" id="pokemon1" name="pokemon1" required>
+                </div>
+                
+                <div class="vs">VS</div>
+                
+                <div class="pokemon-select">
+                    <label for="pokemon2">Pokémon 2:</label>
+                    <input list="pokemon-list" id="pokemon2" name="pokemon2" required>
+                </div>
+            </div>
+            
+            <datalist id="pokemon-list">
+                {% for pokemon in pokemon_list %}
+                    <option value="{{ pokemon }}">
+                {% endfor %}
+            </datalist>
+            
+            <button type="submit">Predict Winner</button>
+        </form>
+        
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        {% if winner and pokemon1 and pokemon2 %}
+        <div class="result-container">
+            <div class="pokemon-display">
+                <div class="pokemon">
+                    <img src="https://img.pokemondb.net/sprites/home/normal/{{ pokemon1.lower() }}.png" alt="{{ pokemon1 }}" onerror="this.src='{{ url_for('static', filename='missingno.png') }}'">
+                    <h3>{{ pokemon1 }}</h3>
+                    <div class="probability">{{ pokemon1_prob }}</div>
+                </div>
+                
+                <div class="vs-big">VS</div>
+                
+                <div class="pokemon">
+                    <img src="https://img.pokemondb.net/sprites/home/normal/{{ pokemon2.lower() }}.png" alt="{{ pokemon2 }}" onerror="this.src='{{ url_for('static', filename='missingno.png') }}'">
+                    <h3>{{ pokemon2 }}</h3>
+                    <div class="probability">{{ pokemon2_prob }}</div>
+                </div>
+            </div>
+            
+            <div class="winner">
+                <h2>Winner: {{ winner }}</h2>
+                <div class="confidence">Confidence: {{ confidence }}</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if battle_details %}
+<div class="battle-analysis">
+    <h3 class="analysis-title">⚔️ BATTLE ANALYSIS ⚔️</h3>
+    
+    <!-- Type Advantage - Animated Bar Comparison -->
+    <div class="analysis-card type-advantage">
+        <div class="card-header">
+            <!-- <img src="{{ url_for('static', filename='icons/type.png') }}" class="icon"> -->
+            <i class="fas fa-font"></i>
+            <span>TYPE ADVANTAGE</span>
+        </div>
+        <div class="type-comparison">
+            <div class="type-bar" style="--advantage: {{ battle_details.type_advantage.pokemon1|replace('x','') }}">
+                <span class="pokemon-name">{{ pokemon1 }}</span>
+                <span class="type-value">{{ battle_details.type_advantage.pokemon1 }}</span>
+                <div class="advantage-bar"></div>
+            </div>
+            <div class="type-bar" style="--advantage: {{ battle_details.type_advantage.pokemon2|replace('x','') }}">
+                <span class="pokemon-name">{{ pokemon2 }}</span>
+                <span class="type-value">{{ battle_details.type_advantage.pokemon2 }}</span>
+                <div class="advantage-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Speed Comparison - Animated Speedometer -->
+    <div class="analysis-card speed-comparison">
+        <div class="card-header">
+            <!-- <img src="{{ url_for('static', filename='icons/speed.png') }}" class="icon"> -->
+            <i class="fas fa-tachometer-alt"></i>
+            <span>SPEED</span>
+        </div>
+        <div class="speedometer">
+            <div class="needle" style="--speed-diff: {{ battle_details.speed.value|int / 50 }}"></div>
+            <div class="labels">
+                <span>{{ pokemon1 }}</span>
+                <span>{{ pokemon2 }}</span>
+            </div>
+            <div class="speed-value">{{ battle_details.speed.attacker }} attacks first</div>
+        </div>
+    </div>
+
+    <!-- Stat Comparison - Radial Chart -->
+    <div class="analysis-card stat-comparison">
+        <div class="card-header">
+            <!-- <img src="{{ url_for('static', filename='icons/stats.png') }}" class="icon"> -->
+            <i class="fas fa-chart-bar"></i>
+            <span>STAT COMPARISON</span>
+        </div>
+        <div class="radar-chart">
+            <canvas id="statChart" width="300" height="300"></canvas>
+            <div class="stat-totals">
+                <div class="total-box">
+                    <span>TOTAL</span>
+                    <strong>{{ battle_details.stats.total|int }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js for Radar Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            const ctx = document.getElementById('statChart');
+            if (!ctx) return;
+            
+            // Prepare data with defaults
+            const statsData = [
+                {{ battle_details.stats.hp|default(0)|int }},
+                {{ battle_details.stats.attack|default(0)|int }},
+                {{ battle_details.stats.defense|default(0)|int }},
+                {{ battle_details.stats.sp_atk|default(0)|int }},
+                {{ battle_details.stats.sp_def|default(0)|int }},
+                {{ battle_details.stats.speed|default(0)|int }}
+            ];
+            
+            const maxStat = Math.max(200, ...statsData.filter(Number.isFinite));
+            
+            new Chart(ctx.getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'],
+                    datasets: [{
+                        label: '{{ pokemon1|default("Pokémon 1") }}',
+                        data: statsData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: maxStat,
+                            ticks: { stepSize: maxStat/5 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Chart initialization failed:', error);
+        }
+    });
+</script>
+{% endif %}
+    </div>
+</body>
+</html>
