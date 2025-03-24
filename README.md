@@ -1,5 +1,3 @@
-
-```markdown
 # Pokémon Battle Predictor 🚀
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
@@ -37,11 +35,11 @@ A machine learning-powered web app that predicts the outcome of Pokémon battles
    ```bash
    git clone https://github.com/yourusername/pokemon-battle-predictor.git
    cd pokemon-battle-predictor
-```
+   ```
 
 2. Create a virtual environment:
 
-   ```bash
+   ```python
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
@@ -70,7 +68,7 @@ A machine learning-powered web app that predicts the outcome of Pokémon battles
    ```
 3. Open in browser:
 
-   ```
+   ``` 
    http://localhost:5000
    ```
 
@@ -86,20 +84,20 @@ A machine learning-powered web app that predicts the outcome of Pokémon battles
 
 ## 📂 Project Structure
 
-```
+
 pokemon-battle-predictor/
-├── data/                  # Pokémon datasets
-├── models/                # Trained ML models
-├── static/                # Static files
-│   ├── css/               # Stylesheets
-│   ├── icons/             # App icons
-│   └── js/                # JavaScript files
-├── templates/             # Flask templates
-├── app.py                 # Main application
-├── train_model.py         # Model training script
-├── requirements.txt       # Dependencies
-└── README.md              # This file
-```
+- ├── data/                  # Pokémon datasets
+- ├── models/                # Trained ML models
+- ├── static/                # Static files
+- │   ├── css/               # Stylesheets
+- │   ├── icons/             # App icons
+- │   └── js/                # JavaScript files
+- ├── templates/             # Flask templates
+- ├── app.py                 # Main application
+- ├── train_model.py         # Model training script
+- ├── requirements.txt       # Dependencies
+- └── README.md              # This file
+
 
 ## 📝 Customizing
 
@@ -142,9 +140,3 @@ Project Link: [https://github.com/Ahmad10Raza/pokemon-battle-predictor](https://
 
 
 
-2. For the requirements.txt:
-   ```
-
-   ```
-
-This README provides users with everything they need to install, run, and
