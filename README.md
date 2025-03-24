@@ -6,7 +6,10 @@
 
 A machine learning-powered web app that predicts the outcome of Pokémon battles based on stats and type matchups, with beautiful visualizations.
 
-![App Screenshot](/static/screenshots/app-preview.png)
+![App Screenshot](https://res.cloudinary.com/dyl5ibyvg/image/upload/v1742846860/hclp1f4qwj79ymecsl95.png)
+
+
+![App Screenshot](https://res.cloudinary.com/dyl5ibyvg/image/upload/v1742846860/vayroztnvggom4wkpq6n.png)
 
 ## 📺 Video Demo
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Demo-red)](https://youtu.be/your-demo-link-here)
