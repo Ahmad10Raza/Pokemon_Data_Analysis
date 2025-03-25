@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: pokemon-battle-predictor
+    runtime: python
+    buildCommand: |
+      pip install -r requirements.txt
+    startCommand: |
+      gunicorn app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
