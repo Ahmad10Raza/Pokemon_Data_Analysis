@@ -9,3 +9,9 @@ services:
     envVars:
       - key: FLASK_ENV
         value: production
+
+envVars:
+  - key: PYTHONUNBUFFERED
+    value: 1
+  - key: MODEL_PATH
+    value: /opt/render/project/src/models/
